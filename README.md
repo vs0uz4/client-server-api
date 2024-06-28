@@ -1,8 +1,9 @@
 # Go Client-Server API
-### Desafio GoLang Pós GoExpert - Client-Server API
 
 > [!IMPORTANT]  
 > Para poder executar os projetos contidos neste repositório é necessário que se tenha o Go instalado no computador. Para maiores informações siga o site https://go.dev/
+
+### Desafio GoLang Pós GoExpert - Client-Server API
 
 Este projeto faz parte como desafio da Pós GoExpert, nele são cobertos os conhecimentos em http webserver, contextos, banco de dados e também manipulação de aquivos.
 
