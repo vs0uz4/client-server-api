@@ -91,9 +91,6 @@ func handlerHealth(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusOK)
 
-		duration := time.Since(startTime)
-		uptime := time.Since(programStartTime)
-
 		memStats, err := getMemoryStats()
 		if err != nil {
 			log.Printf("Error getting memory stats :: %v", err)
@@ -105,6 +102,9 @@ func handlerHealth(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error getting CPU stats :: %v", err)
 			return
 		}
+
+		duration := time.Since(startTime)
+		uptime := time.Since(programStartTime)
 
 		res := map[string]interface{}{
 			"status":   "pass",
