@@ -107,7 +107,7 @@ func handlerHealth(w http.ResponseWriter, r *http.Request) {
 		}
 
 		res := map[string]interface{}{
-			"status":   "ok",
+			"status":   "pass",
 			"duration": duration.String(),
 			"uptime":   uptime.String(),
 			"cpu": map[string]interface{}{
