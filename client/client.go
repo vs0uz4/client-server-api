@@ -19,7 +19,7 @@ type FileInfo struct {
 }
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:8080/cotacao", nil)
@@ -31,7 +31,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error sending request :: %v", err)
 	}
-	log.Printf("Sending request :: [%s] - %s%s", req.Method, req.Host, req.URL.Path)
+	defer res.Body.Close()
+
+	log.Printf("Sending request :: %s [%s] - %s%s", req.Proto, req.Method, req.Host, req.URL.Path)
 
 	file, err := os.Create("logs/cotacao.txt")
 	if err != nil {
@@ -43,7 +45,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error reading response body :: %v", err)
 	}
-	defer res.Body.Close()
 
 	var result Result
 	err = json.Unmarshal(body, &result)
@@ -64,4 +65,5 @@ func main() {
 		log.Fatalf("Error getting file info :: %v", err)
 	}
 	log.Printf("Log file created :: %s - (%d bytes)", fileInfo.Name(), fileInfo.Size())
+
 }
