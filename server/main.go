@@ -343,7 +343,7 @@ func handlerQuotation(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
 		res := map[string]interface{}{
-			"Bid": (*ExchangeRate)["USDBRL"].Bid,
+			"bid": (*ExchangeRate)["USDBRL"].Bid,
 		}
 		json.NewEncoder(w).Encode(res)
 		log.Printf("Request processed, (%d) %s affected :: %s - [%s] - %s", rowsAffected.RowsQuantity, rowsAffected.RowsString, r.Proto, r.URL.Path, r.RemoteAddr)
