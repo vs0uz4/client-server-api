@@ -2,7 +2,11 @@ module server
 
 go 1.22.3
 
-require github.com/shirou/gopsutil v3.21.11+incompatible
+require (
+	github.com/google/uuid v1.6.0
+	github.com/mattn/go-sqlite3 v1.14.22
+	github.com/shirou/gopsutil v3.21.11+incompatible
+)
 
 require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
