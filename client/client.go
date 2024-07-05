@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -19,7 +20,7 @@ type FileInfo struct {
 }
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Microsecond)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:8080/cotacao", nil)
@@ -30,7 +31,11 @@ func main() {
 	req.Header.Set("Accept", "application/json")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalf("Error sending request :: %v", err)
+		if errors.Is(err, context.DeadlineExceeded) {
+			log.Fatalf("Error request timeout :: %v", err)
+		} else {
+			log.Fatalf("Error when sending request :: %v", err)
+		}
 	}
 	defer res.Body.Close()
 
