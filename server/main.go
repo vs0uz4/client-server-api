@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -27,6 +28,22 @@ type MemoryStats struct {
 	Active      uint64  `json:"active"`
 	Inactive    uint64  `json:"inactive"`
 }
+
+type ExchangeRate struct {
+	Code       string `json:"code"`
+	CodeIn     string `json:"codein"`
+	Name       string `json:"name"`
+	High       string `json:"high"`
+	Low        string `json:"low"`
+	VarBid     string `json:"varBid"`
+	PctChange  string `json:"pctChange"`
+	Bid        string `json:"bid"`
+	Ask        string `json:"ask"`
+	Timestamp  string `json:"timestamp"`
+	CreateDate string `json:"create_date"`
+}
+
+type CurrencyExchangeRate map[string]ExchangeRate
 
 func getCPUStats() (*CpuStats, error) {
 	usedPercent, err := cpu.Percent(0, true)
@@ -64,6 +81,27 @@ func getMemoryStats() (*MemoryStats, error) {
 	}
 
 	return stats, nil
+}
+
+func getExchangeRate() (*CurrencyExchangeRate, error) {
+	resp, err := http.Get("https://economia.awesomeapi.com.br/json/last/USD-BRL")
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var exchangeRate CurrencyExchangeRate
+	err = json.Unmarshal(body, &exchangeRate)
+	if err != nil {
+		return nil, err
+	}
+
+	return &exchangeRate, nil
 }
 
 func handlerHealth(w http.ResponseWriter, r *http.Request) {
@@ -128,9 +166,47 @@ func handlerHealth(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func handlerQuotation(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 200*time.Millisecond)
+	defer cancel()
+
+	select {
+	case <-ctx.Done():
+		if ctx.Err() == context.DeadlineExceeded {
+			w.WriteHeader(http.StatusRequestTimeout)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Request timeout"})
+			log.Printf("Request timeout :: %s - [%s] - %s", r.Proto, r.URL.Path, r.RemoteAddr)
+		} else {
+			log.Printf("Request canceled :: %s - [%s] - %s", r.Proto, r.URL.Path, r.RemoteAddr)
+		}
+		return
+	default:
+		ExchangeRate, err := getExchangeRate()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Error getting exchange rate"})
+			log.Printf("Error getting exchange rate :: %v", err)
+			return
+		}
+
+		w.Header().Set("Accept", "application/json")
+		w.Header().Set("Content-Type", "application/json")
+
+		w.WriteHeader(http.StatusOK)
+
+		res := map[string]interface{}{
+			"Bid": (*ExchangeRate)["USDBRL"].Bid,
+		}
+
+		json.NewEncoder(w).Encode(res)
+		log.Printf("Request success :: %s - [%s] - %s", r.Proto, r.URL.Path, r.RemoteAddr)
+	}
+}
+
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handlerHealth)
+	mux.HandleFunc("/cotacao", handlerQuotation)
 
 	log.Println("Server listening on localhost:8080")
 
