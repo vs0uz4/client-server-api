@@ -27,6 +27,7 @@ func main() {
 		log.Fatalf("Error creating request :: %v", err)
 	}
 
+	req.Header.Set("Accept", "application/json")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatalf("Error sending request :: %v", err)
