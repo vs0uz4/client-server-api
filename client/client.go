@@ -31,14 +31,20 @@ func quoteCurrency(ctx context.Context) {
 			log.Fatalf("Error creating request :: %v", err)
 		}
 
+		startTime := time.Now()
 		req.Header.Set("Accept", "application/json")
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
 			log.Fatalf("Error when quote currency :: %v", err)
-		} else {
-			log.Printf("Sending request :: %s [%s] - %s%s", req.Proto, req.Method, req.Host, req.URL.Path)
 		}
 		defer res.Body.Close()
+		duration := time.Since(startTime)
+
+		if res.StatusCode != http.StatusOK {
+			log.Fatalf("Error getting response :: %s - %d bytes - %s", res.Status, res.ContentLength, duration.String())
+		}
+
+		log.Printf("Sending request :: %s [%s] - %s%s", req.Proto, req.Method, req.Host, req.URL.Path)
 		saveQuotation(res)
 	}
 }
