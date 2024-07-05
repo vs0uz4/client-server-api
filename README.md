@@ -45,20 +45,20 @@ Na janela do terminal você deverá ver uma mensagem parecida com o exemplo abai
 
 #### Client
 
-Para poder executar o `client` você precisa estar dentro da pasta `client` e executar o seguinte comando abaixo a partir do terminal:
+Para poder executar o `client` você precisa estar dentro da pasta `client` e executar os seguintes comandos abaixo a partir do terminal:
 ```shell
 ❯ go run client.go
 ```
 Na janela do terminal você deverá ver uma mensagem parecida com o exemplo abaixo:
 ```shell
-❯ go run main.go
+❯ go run server.go
 2024/07/05 01:47:41 Sending request :: [GET] - localhost:8080/cotacao
 2024/07/05 01:47:41 Log file created :: cotacao.txt - (14 bytes)
 ```
 > O exemplo de mensagem acima, apresenta `logs` informando os momentos em que a requisição é disparada e em que o aquivo `cotacao.txt` é criado.
 
 #### Endpoint /health
-De modo a aprofundar mais os estudos desenvolvi um `endpoint` para exemplificar um `health-check`, neste endpoint ao acionarmos receberemos um JSON como resposta contendo as seguintes informações:
+De modo a aprofundar mais os estudos desenvolvi um `endpoint` para exemplificar um `health-check`, ao ser acionado, este endpoint retornará um JSON como resposta, onde o mesmo conterá as seguintes informações:
 ```json
 {
 "cpu": {
