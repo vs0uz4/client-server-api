@@ -18,9 +18,6 @@
 go.work
 go.work.sum
 
-# Database files
-*.db
-
 # IDEs settings files
 .idea/
 .vscode/
