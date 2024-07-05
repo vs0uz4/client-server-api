@@ -129,7 +129,13 @@ func handlerHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/health", handlerHealth)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/health", handlerHealth)
+
 	log.Println("Server listening on localhost:8080")
-	http.ListenAndServe(":8080", nil)
+
+	err := http.ListenAndServe(":8080", mux)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
