@@ -19,20 +19,28 @@ type FileInfo struct {
 }
 
 func quoteCurrency(ctx context.Context) {
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:8080/cotacao", nil)
-	if err != nil {
-		log.Fatalf("Error creating request :: %v", err)
-	}
+	select {
+	case <-ctx.Done():
+		if ctx.Err() == context.DeadlineExceeded {
+			log.Fatalf("Currency quotation canceled :: %v", ctx.Err())
+		}
+		return
+	default:
+		req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:8080/cotacao", nil)
+		if err != nil {
+			log.Fatalf("Error creating request :: %v", err)
+		}
 
-	req.Header.Set("Accept", "application/json")
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Fatalf("Error when quote currency :: %v", err)
-	} else {
-		log.Printf("Sending request :: %s [%s] - %s%s", req.Proto, req.Method, req.Host, req.URL.Path)
+		req.Header.Set("Accept", "application/json")
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Fatalf("Error when quote currency :: %v", err)
+		} else {
+			log.Printf("Sending request :: %s [%s] - %s%s", req.Proto, req.Method, req.Host, req.URL.Path)
+		}
+		defer res.Body.Close()
+		saveQuotation(res)
 	}
-	defer res.Body.Close()
-	saveQuotation(res)
 }
 
 func saveQuotation(res *http.Response) {
