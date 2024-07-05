@@ -1,21 +1,23 @@
 # Go Client-Server API
 
 > [!IMPORTANT]  
-> Para poder executar os projetos contidos neste repositório é necessário que se tenha o Go instalado no computador. Para maiores informações siga o site https://go.dev/
+> Para poder executar os projetos contidos neste repositório é necessário que se tenha o Go instalado no computador. Para maiores informações siga o site <https://go.dev/>
 
-### Desafio GoLang Pós GoExpert - Client-Server API
+## Desafio GoLang Pós GoExpert - Client-Server API
 
 Este projeto faz parte como desafio da Pós GoExpert, nele são cobertos os conhecimentos em http webserver, contextos, banco de dados e também manipulação de aquivos.
 
 O Desafio consiste em entregar dois sistemas em Go, sendo eles:
+
 - client.go
 - server.go
 
 Dos quais devem obdecer os seguintes requisitos:
+
 - O client.go deverá realizar uma requisição HTTP no server.go solicitando a cotação do dólar.
 - O server.go deverá consumir uma API contendo o câmbio de Dólar e Real e em seguida deverá retornar no formato JSON o resultado para o cliente. Abaixo segue o link da API a ser consumida:
 
-    ```
+    ```plaintext
     https://economia.awesomeapi.com.br/json/last/USD-BRL 
     ```
 
@@ -30,35 +32,46 @@ Dos quais devem obdecer os seguintes requisitos:
 - O endpoint necessário gerado pelo server.go para este desafio será: `/cotacao` e a porta a ser utilizada pelo servidor HTTP será a **8080**.
 
 ### Executando os sistemas
+
 #### Server
 
 Para poder executar o `server` você precisa estar dentro da pasta `server` e executar o seguinte comando abaixo a partir do terminal:
+
 ```shell
 ❯ go run server.go
 ```
+
 Na janela do terminal você deverá ver uma mensagem parecida com o exemplo abaixo:
+
 ```shell
 ❯ go run server.go
 2024/07/05 01:46:07 Server listening on localhost:8080
 ```
+
 > Esta mensagem informa que o servidor já encontra-se disponível.
 
 #### Client
 
 Para poder executar o `client` você precisa estar dentro da pasta `client` e executar os seguintes comandos abaixo a partir do terminal:
+
 ```shell
 ❯ go run client.go
 ```
+
 Na janela do terminal você deverá ver uma mensagem parecida com o exemplo abaixo:
+
 ```shell
 ❯ go run server.go
 2024/07/05 01:47:41 Sending request :: [GET] - localhost:8080/cotacao
 2024/07/05 01:47:41 Log file created :: cotacao.txt - (14 bytes)
 ```
+
 > O exemplo de mensagem acima, apresenta `logs` informando os momentos em que a requisição é disparada e em que o aquivo `cotacao.txt` é criado.
 
 #### Endpoint /health
+
 De modo a aprofundar mais os estudos desenvolvi um `endpoint` para exemplificar um `health-check`, ao ser acionado, este endpoint retornará um JSON como resposta, onde o mesmo conterá as seguintes informações:
+
 ```json
 {
 "cpu": {
@@ -88,3 +101,48 @@ De modo a aprofundar mais os estudos desenvolvi um `endpoint` para exemplificar 
 "uptime": "16m1.870507292s"
 }
 ```
+
+### Telas
+
+#### Projeto
+
+![Projetos Rodando](./docs/running.png)
+> Projetos rodando, `client` e `server` expondo Logs de mensagens em execução
+
+#### Cenário de Sucesso
+
+![Sucesso no Server](./docs/success_server.png)
+> Logs do servidor em um cenário de total sucesso.
+
+![Sucesso no Client](./docs/success_client.png)
+> Logs do client em um cenário de total sucesso.
+
+#### Cenário de ERRO - Internal Server Error
+
+Erro de timeout na operações com o Banco de Dados, onde irá retornar ao client um ERRO interno do servidor.
+
+![Database Timeout](./docs/server_database_timeout.png)
+> Erro de timeout na operações com o Banco de Dados.
+
+![Internal Server Error](./docs/client_internal_server_error.png)
+> Internal Server Error sendo disparado pelo servidor.
+
+#### Cenário de ERRO - Server Timeout
+
+Erro de timeout no servidor, onde irá retornar ao client um ERRO de request timeout.
+
+![Server Timeout](./docs/server_timeout_error.png)
+> Requisição ao site de cotações estourando tempo de timeout no servidor.
+
+![Client Server Timeout](./docs/client_server_timeout_error.png)
+> Client recebendo timeout do servidor, como resposta a requisição.
+
+#### Cenário de ERRO - Client Timeout
+
+Requisição efetuada pelo cliente estourando o tempo de timeout.
+
+![Server Running](./docs/server_without_errors.png)
+> Servidor em execução, sem nenhum log de ERRO ou SUCESSO.
+
+![Client Timeout](./docs/client_timeout_error.png)
+> Client estourando o tempo de timeout para a requisição.
